@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
+    <?!= HtmlService.createHtmlOutputFromFile('js').getContent(); ?>
+  </head>
+  <body>
+  <!-- get indent item data -->
+  <? var data = get_new_indent_items(); ?>
+  <!-- get indents pending assignment -->
+  <? var existing_items = get_existing_indent_with_data(); ?>
+  <? var existing = existing_items[0]; ?>
+  <? var deadlines = existing_items[1]; ?>
+  <div class="container">
+  <br>
+  <div id="indent_item_data" class="container">
+  <br>
+  <h4>New</h4>
+  <p class="lead">Please select the items from the list below and hit <b>approve</b></p>            
+  <table class="table table-bordered" id="indent_items">
+    <thead>
+      <tr>
+        <th scope="col">BIC Number</th>
+        <th scope="col">Item Description</th>
+        <th scope="col">Quantity</th>
+        <th scope="col">UOM</th>
+      </tr>
+    </thead>
+    <tbody>
+      <? for (var i = 0; i < data.length; i++) { ?>
+      <tr>
+        <td>
+         <div class="custom-control custom-checkbox">
+          <input type="checkbox" class="custom-control-input" id="<?= data[i]['bic'] ?>">
+          <label class="custom-control-label" for="<?= data[i]['bic'] ?>"><?= data[i]['bic'] ?></label>
+         </div>
+        </td>
+        <td><a data-toggle="modal" href="#modal_t1_<?= i ?>"><?= data[i]['Item Description'] ?></a></td>
+        <!-- The Modal -->
+        <div class="modal fade" id="modal_t1_<?= i ?>">
+        <div class="modal-dialog">
+        <div class="modal-content">
+        <!-- Modal Header -->
+        <div class="modal-header">
+        <h4 class="modal-title">BIC: <?= data[i]['bic'] ?></h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        <!-- Modal body -->
+        <div class="modal-body">
+        <b>Created On:</b> <?= data[i]['Timestamp'] ?>
+        <br><b>Product Group:</b> <?= data[i]['Product Group'] ?>
+        <br><b>Type:</b> <?= data[i]['Type'] ?>
+        <br><b>Purpose:</b> <?= data[i]['Purpose'] ?> 
+        <br><b>Contract Number:</b> <?= data[i]['Contract'] ?>
+        <br><b>Item Description:</b> <?= data[i]['Item Description'] ?>
+        <br><b>Quantity:</b> <?= data[i]['Quantity'] ?>
+        <br><b>UOM:</b> <?= data[i]['UOM'] ?>
+        <br><b>Required by Date:</b> <?= data[i]['Required by Date'] ?>
+        <br><b>Reason:</b> <?= data[i]['Reason'] ?>
+        <br><b>Remarks:</b> <?= data[i]['Remarks'] ?>
+        <br><b>Present Stock:</b> <?= data[i]['Present Stock'] ?>
+        <br><b>Buying Price:</b> <?= data[i]['Buying Price'] ?>
+        <br><b>Selling Price:</b> <?= data[i]['Selling Price'] ?>
+        <br><b>Supplier Name:</b> <?= data[i]['Supplier Name'] ?>
+        <br><b>Unit Price:</b> <?= data[i]['Unit Price'] ?>
+        <br><b>Discount Price:</b> <?= data[i]['Discount Price'] ?>
+        <br><b>Total Price:</b> <?= data[i]['Total Price'] ?>
+        <br><b>Part Number:</b> <?= data[i]['Part Number'] ?>
+        </div>
+        <!-- Modal footer -->
+        <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+        </div>
+        </div>
+        </div>
+        </div>
+        <td><?= data[i]['Quantity'] ?></td>
+        <td><?= data[i]['UOM'] ?></td>
+      </tr>
+      <? } ?>
+    </tbody>
+  </table>
+  <button class="btn btn-success btn-md" id="approve_btn">
+    <span id="approve_spinner" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display:none;"></span>
+    Approve
+  </button>
+  </div>
+  <br>
+  <!-- indent items pending assignment -->
+  <div id="pending_item_data" class="container">
+  <hr>
+  <h4>Approved</h4>
+  <p class="lead">Please select the items from the list below and hit <b>assign</b></p>
+  <table class="table table-bordered" id="pending_items">
+    <thead>
+      <tr>
+        <th scope="col">BIC Number</th>
+        <th scope="col">Item</th>
+        <th scope="col">Category</th>
+        <th scope="col">Transfer To</th>
+        <th scope="col">Evaluation By</th>
+      </tr>
+    </thead>
+    <tbody>
+      <? for (var i = 0; i < existing.length; i++) { ?>
+      <tr>
+        <td>
+         <div class="custom-control custom-checkbox">
+          <input type="checkbox" class="custom-control-input" id="<?= existing[i]['bic'] ?>">
+          <label class="custom-control-label" for="<?= existing[i]['bic'] ?>"><?= existing[i]['bic'] ?></label>
+         </div>
+        </td>
+        <td><a data-toggle="modal" href="#modal_t2_<?= i ?>"><?= existing[i]['Item Description'] ?></a></td>
+        <!-- The Modal -->
+        <div class="modal fade" id="modal_t2_<?= i ?>">
+         <div class="modal-dialog">
+         <div class="modal-content">
+         <!-- Modal Header -->
+         <div class="modal-header">
+          <h4 class="modal-title">BIC: <?= existing[i]['bic'] ?></h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+         </div>
+         <!-- Modal body -->
+         <div class="modal-body">
+         <b>Created On:</b> <?= existing[i]['Timestamp'] ?>
+         <br><b>Product Group:</b> <?= existing[i]['Product Group'] ?>
+         <br><b>Type:</b> <?= existing[i]['Type'] ?>
+         <br><b>Purpose:</b> <?= existing[i]['Purpose'] ?> 
+         <br><b>Contract Number:</b> <?= existing[i]['Contract'] ?>
+         <br><b>Item Description:</b> <?= existing[i]['Item Description'] ?>
+         <br><b>Quantity:</b> <?= existing[i]['Quantity'] ?>
+         <br><b>UOM:</b> <?= existing[i]['UOM'] ?>
+         <br><b>Required by Date:</b> <?= existing[i]['Required by Date'] ?>
+         <br><b>Reason:</b> <?= existing[i]['Reason'] ?>
+         <br><b>Remarks:</b> <?= existing[i]['Remarks'] ?>
+         <br><b>Present Stock:</b> <?= existing[i]['Present Stock'] ?>
+         <br><b>Buying Price:</b> <?= existing[i]['Buying Price'] ?>
+         <br><b>Selling Price:</b> <?= existing[i]['Selling Price'] ?>
+         <br><b>Supplier Name:</b> <?= existing[i]['Supplier Name'] ?>
+         <br><b>Unit Price:</b> <?= existing[i]['Unit Price'] ?>
+         <br><b>Discount Price:</b> <?= existing[i]['Discount Price'] ?>
+         <br><b>Total Price:</b> <?= existing[i]['Total Price'] ?>
+         <br><b>Part Number:</b> <?= existing[i]['Part Number'] ?>
+         </div>
+         <!-- Modal footer -->
+         <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+         </div>
+         </div>
+         </div>
+        </div>
+        <? var index = existing[i]['bic'].split('/')[0]; ?>
+        <td>
+         <select class="form-control" id="cat_<?= index ?>" name="cat_<?= index ?>">
+          <option value="Fast Track">Fast Track</option>
+          <option value="Price Discovery">Price Discovery</option>
+          <option value="Vendor Discovery">Vendor Discovery</option>
+         </select>
+        </td>
+         <td>
+         <select class="form-control" id="assign_<?= index ?>" name="assign_<?= index ?>">
+          <option value="TC">TC</option>
+          <option value="SM">SM</option>
+          <option value="TKD">TKD</option>
+          <option value="AS">AS</option>
+         </select>
+        </td>
+        <td><?= deadlines[i]?></td>
+      </tr>
+      <? } ?>
+    </tbody>
+  </table>
+  <button class="btn btn-success btn-md" id="assign_btn">
+   <span id="assign_spinner" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display:none;"></span>
+   Assign
+  </button>
+  </div>
+  <br>
+  </div>
+  </body>
+</html>

@@ -1,0 +1,38 @@
+<!-- javascript goes here -->
+<script>
+$(document).ready(function(){
+ // approve a new indent 
+ $("#approve_btn").on("click", function () {
+   var values = [];
+   var table = $('#indent_items');
+   $('input:checkbox:checked', table).each(function() {
+    values.push($(this).closest('tr').find('td:first').text().trim());
+   }).get();
+   // show loading spinner
+   $("#approve_btn").attr("disabled", true);
+   $('#approve_spinner').show();
+   google.script.run.withSuccessHandler(reload_page).approve_items(values);
+ });
+ // assign an approved indent to someone
+ $("#assign_btn").on("click", function () {
+   var values = [];
+   var table = $('#pending_items');
+   $('input:checkbox:checked', table).each(function() {
+    values.push({
+    'bic': $(this).closest('tr').find('td:first').text().trim()
+    ,'cat': $(this).closest('tr').find('td:nth-child(3)').find('select').val().trim()
+    ,'assign': $(this).closest('tr').find('td:nth-child(4)').find('select').val().trim()
+    });
+   }).get();
+   console.log(values);
+   // show loading spinner
+   $("#assign_btn").attr("disabled", true);
+   $('#assign_spinner').show();
+   google.script.run.withSuccessHandler(reload_page).assign_indent_items(values);
+ });
+});
+function reload_page(){
+ console.log('reloading...');
+ window.open("https://script.google.com/a/hitech.in/macros/s/AKfycbwFbDM3_R47XFfVcOzZNfvS0Dit5Fzp7yl8SdZqIiw/dev",'_top');
+}
+</script>
